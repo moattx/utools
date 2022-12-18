@@ -6,6 +6,7 @@ utools is a collection of user tools that aid in retrieving data from a system.
 utools currently only supports Linux.
 
 The following are the tools that are included in utools: 
+
 	power.c		prints the battery percentage and whether or not its charging
 	mem.c		prints free, used, and total memory for the system
 	temp.c  	prints the cpu's temperature
