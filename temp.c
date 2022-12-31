@@ -7,6 +7,6 @@ char *USAGE = "";
 int
 main(void)
 {
-	printf("%ju%% \n", temp());
+	printf("%ju%%\n", temp());
 	return 0;
 }
