@@ -16,12 +16,21 @@ add_project_arguments(
   language: 'c',
 )
 
-# TODO: NetBSD
-
 is_linux = host_machine.system().startswith('linux')
+is_netbsd = host_machine.system().startswith('netbsd')
 
 if is_linux
         executable('mem', 'mem.c', 'mem_linux.c', 'util.c', install: true)
         executable('power', 'power.c', 'power_linux.c', 'util.c', install: true)
         executable('temp', 'temp.c', 'temp_linux.c', 'util.c', install: true)
 endif
+
+if is_netbsd
+        cc = meson.get_compiler('c')
+        lprop = cc.find_library('prop',
+               dirs : ['/usr/lib/'])
+        executable('mem', 'mem.c', 'mem_netbsd.c', 'util.c',  install: true)
+        executable('power', 'power.c', 'power_netbsd.c', 'util.c','netbsd.c', dependencies : [lprop], install: true)
+        executable('temp', 'temp.c', 'temp_netbsd.c', 'util.c','netbsd.c',dependencies : [lprop], install: true)
+endif
+

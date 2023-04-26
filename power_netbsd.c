@@ -33,51 +33,15 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include "power.h"
+#include "netbsd.h"
+
 
 bool
 is_connected(void)
 {
-	prop_dictionary_t dict, fields;
-	prop_object_t device, curvalue, descfield;
-	prop_object_iterator_t diter, fiter;
-
-	bool connected = 0;
-
-	int fd = open(_PATH_SYSMON, O_RDONLY);
-	if (fd == -1)
-		goto error;
-
-	if (prop_dictionary_recv_ioctl(fd, ENVSYS_GETDICTIONARY, &dict) != 0)
-		goto error;
-
-	diter = prop_dictionary_iterator(dict);
-	if (diter == NULL)
-		goto error;
-
-	while ((device = prop_object_iterator_next(diter)) != NULL) {
-		if ((fiter = prop_array_iterator(prop_dictionary_get_keysym(dict,
-		    device))) == NULL)
-			goto error;
-
-		while ((fields = prop_object_iterator_next(fiter)) != NULL) {
-			curvalue = prop_dictionary_get(fields, "cur-value");
-			descfield = prop_dictionary_get(fields, "description");
-
-			if (descfield == NULL || curvalue == NULL)
-				continue;
-
-			if (prop_string_equals_cstring(descfield,
-			    "connected")) {
-				connected = prop_number_integer_value(curvalue);
-			}
-		}
-	}
+	bool connected = get_value("connected");
+	/*printf("connected = %i\n", connected);*/
 	return connected;
-
-error:
-	if (fd != -1)
-		close(fd);
-	exit(EXIT_FAILURE);
 }
 
 double
@@ -113,14 +77,14 @@ get_percent(void)
 
 			if (desc == NULL || curvalue == NULL)
 				continue;
-			if (prop_string_equals_cstring(desc, "present")) {
-				if (prop_number_integer_value(curvalue) == 0)
+			if (prop_string_equals_string(desc, "present")) {
+				if (prop_number_signed_value(curvalue) == 0)
 					goto error;
-			} else if (prop_string_equals_cstring(desc, "charge")) {
+			} else if (prop_string_equals_string(desc, "charge")) {
 				if (maxvalue == NULL)
 					continue;
-				charge = prop_number_integer_value(curvalue);
-				capacity = prop_number_integer_value(maxvalue);
+				charge = prop_number_signed_value(curvalue);
+				capacity = prop_number_signed_value(maxvalue);
 			}
 		}
 	}

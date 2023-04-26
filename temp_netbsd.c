@@ -6,14 +6,17 @@
  * in the source distribution for its full text.
 */
 
+
 #include <stdio.h>
 #include "temp.h"
+#include "netbsd.h"
 
-char *USAGE = "";
-
-int
-main(void)
+uintmax_t
+temp(void)
 {
-	printf("%ju%%\n", temp());
-	return 0;
+	uintmax_t temp = get_value("temperature");
+	temp = (temp / 1000000.0) - 273.15;
+	return temp;
 }
+
+

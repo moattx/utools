@@ -1,4 +1,3 @@
-
 /*
  * utools - power_netbsd.c
  * (C) 2023 moatx
@@ -6,14 +5,7 @@
  * in the source distribution for its full text.
 */
 
-#include <stdio.h>
-#include "temp.h"
-
-char *USAGE = "";
-
-int
-main(void)
-{
-	printf("%ju%%\n", temp());
-	return 0;
-}
+#ifndef NETBSD_H_
+#define NETBSD_H_
+intmax_t get_value(const char* cstring);
+#endif

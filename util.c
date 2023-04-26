@@ -1,4 +1,11 @@
-/* See LICENSE file for copyright and license details. */
+
+/*
+ * utools - power_netbsd.c
+ * (C) 2023 moatx
+ * Released under the GNU GPLv2+, see the COPYING file
+ * in the source distribution for its full text.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -24,6 +31,7 @@ rputs(double size)
 void
 readfile(char *str, char *dir, size_t strl)
 {
+	FILE *fp;
 	//assert(str == NULL);
 	assert(str);
 	assert(dir);
@@ -31,7 +39,6 @@ readfile(char *str, char *dir, size_t strl)
 	//assert(dir[0] != '\0');
 	//assert(strcmp(dir, " "));
 
-	FILE *fp;
 
 	if ((fp = fopen(dir, "r")) == NULL)
 		goto out;

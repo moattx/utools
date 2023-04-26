@@ -22,7 +22,4 @@ To install, simply do:
 
 LICENSE
 -------
-The GNU General Public License, version 2 (GPL-2.0) governs the use of power.c and power_netbsd.c. You may find the license in the GPL2 file. 
-
-The license for the rest of the codebase can be found in LICENSE.
-
+GNU General Public License, version 2 (GPL-2.0) or, at your option, any later version.
