@@ -10,7 +10,7 @@ The following are the tools that are included in utools:
 	power.c		prints the battery percentage and whether or not its charging
 	mem.c		prints free, used, and total memory for the system
 	temp.c  	prints the cpu's temperature
-    	timer.c     	prints the timer, until it reaches zero. see timer(1).
+	timer.c     	prints the timer, until it reaches zero. see timer(1).
 
 INSTALLING
 ----------
