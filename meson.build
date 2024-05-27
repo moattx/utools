@@ -34,3 +34,5 @@ if is_netbsd
         executable('temp', 'temp.c', 'temp_netbsd.c', 'util.c','netbsd.c',dependencies : [lprop], install: true)
 endif
 
+#is_all
+executable('timer', 'timer.c', install: true)

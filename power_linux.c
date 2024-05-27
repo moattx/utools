@@ -27,12 +27,12 @@ is_connected(void)
 	//13
 	char status[13];
 
-	readfile(status, "/sys/class/power_supply/BAT0/status",
-	    sizeof(STATUS_STRING));
+	readfile("/sys/class/power_supply/BAT0/status", status,
+	    13);
 
 	//ASERT NOT EMPTY STRING
 
-	debug_print("status = %s\n", status);
+	//debug_print("status = %s\n", status);
 	/*
         debug_print("strncmp = %i\n", strncmp(status, STATUS_STRING,
             sizeof(STATUS_STRING)));
@@ -53,11 +53,11 @@ get_percent(void)
 {
 	char percent[4];
 
-	readfile(percent, "/sys/class/power_supply/BAT0/capacity",
+	readfile("/sys/class/power_supply/BAT0/capacity", percent,
 	    sizeof(percent));
 	//readfile(percent, " ", sizeof(percent));
 
-	debug_print("percent = %s\n", percent);
+	//debug_print("percent = %s\n", percent);
 
 	assert(is_int_or_empty(percent) == true);
 
@@ -79,12 +79,12 @@ is_int_or_empty(const char *str)
 	if (!*str)
 		return false;
 
-	debug_print("str = %s\n", str);
-	debug_print("strlen = %li \n", strlen(str));
+	//debug_print("str = %s\n", str);
+	//debug_print("strlen = %li \n", strlen(str));
 
 	/* (strlen - 1) to get rid of \0 */
 	for (; i < (strlen(str) - 1); ++i) {
-		debug_print("str[i] = %c\n", str[i]);
+		//debug_print("str[i] = %c\n", str[i]);
 		if (isdigit(str[i])) {
 			continue;
 		} else {

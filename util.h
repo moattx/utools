@@ -28,9 +28,11 @@
 #define debug_print(fmt, ...) do {} while (0)
 #endif
 */
+/*
 #define debug_print(fmt, ...)						\
         do { if (DEBUG) fprintf(stderr, "%s: %d: %s(): debug: " fmt, __FILE__,\
                                 __LINE__, __func__, __VA_ARGS__); } while (0)
+				*/
 
 extern char *USAGE;
 
@@ -63,7 +65,7 @@ usage(int v)
 }
 
 void rputs(double size);
-void readfile(char *str, char *dir, size_t strlen);
+void readfile (const char *path, char *rstr, size_t size);
 
 /* #ifndef __BSD__ */
 /*

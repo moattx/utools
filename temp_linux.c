@@ -21,6 +21,6 @@ temp(void)
 {
 	char temp[BUFF_SIZE];
 
-	readfile(temp, FILE_NAME, sizeof(temp));
+	readfile(FILE_NAME, temp, sizeof(temp));
 	return (strtoull(temp, NULL, 10) / 1000);
 }

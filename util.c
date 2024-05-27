@@ -28,6 +28,7 @@ rputs(double size)
 	printf("%.*f %s\n", i, size, units[i]);
 }
 
+/*
 void
 readfile(char *str, char *dir, size_t strl)
 {
@@ -47,10 +48,36 @@ readfile(char *str, char *dir, size_t strl)
 	if (ferror(fp))
 		goto out;
 
-	/* remove trailing newline */
 	str[strcspn(str, "\n")] = ' ';
 
 out:
 	if (fclose(fp) != 0)
 		err(EXIT_FAILURE, " ");
+}
+*/
+
+// Read text from a file and trim newline
+void
+readfile (const char *path, char *rstr, size_t size)
+{
+  assert (size > 1);
+  FILE *fp;
+  char *str = malloc (size);
+  assert (str != NULL);
+
+  if ((fp = fopen (path, "r")) == NULL)
+    goto out;
+
+  // read char bytes in fp until size and store it in str
+  (void) fread (str, sizeof (char), size, fp);
+
+  // remove trailing newline
+  str[strcspn (str, "\n")] = 0;
+
+  memcpy (rstr, str, size);
+
+out:
+  free (str);
+  if (fclose (fp) != 0)
+    err (EXIT_FAILURE, " ");
 }
