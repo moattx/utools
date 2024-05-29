@@ -15,6 +15,7 @@
 #include<unistd.h>
 #include<string.h>
 #include<ctype.h>
+#include<signal.h>
 
 static void
 usage (void)
@@ -24,10 +25,15 @@ usage (void)
   fprintf (stderr, "usage: see %s(1)\n", __progname);
 }
 
+static void
+on_signal ()
+{
+  printf ("\33[?25h");
+  exit (1);
+}
+
 void countdown (int timer[], int countdown);
 
-// XXX: if there is more than one flag set, then using the ':' seperator,
-// seperates each number into their respecive array slot
 int
 main (int argc, char **argv)
 {
@@ -36,6 +42,11 @@ main (int argc, char **argv)
       usage ();
       goto err;
     }
+  // disable cursor
+  printf ("\33[?25l");
+  (void) signal (SIGHUP, on_signal);
+  (void) signal (SIGINT, on_signal);
+  (void) signal (SIGTERM, on_signal);
 
   if (':' == argv[1][0] || ':' == argv[1][strlen (argv[1])])
     {
@@ -61,14 +72,14 @@ main (int argc, char **argv)
       fprintf (stderr, "wrong number of colons\n");
       goto err;
     }
-  // minutes
+  // minutes MM:SS
   if (numcolon == 1)
     {
       int timer[2];
       timer[0] = atoi (&argv[1][0]);
       timer[1] = atoi (&argv[1][2]);
       countdown (timer, numcolon);
-    }
+    } // hours HH:MM:SS
   else
     {
       int timer[3];
@@ -79,6 +90,8 @@ main (int argc, char **argv)
     }
   return EXIT_SUCCESS;
 err:
+  // get cursor back
+  printf ("\33[?25h");
   return EXIT_FAILURE;
 }
 
@@ -95,6 +108,8 @@ countdown (int timer[], int numcolon)
 	      if (timer[numcolon] == 0
 		  && timer[numcolon - 1] == 0 && timer[numcolon - 2] == 0)
 		{
+		  // get cursor back
+		  printf ("\33[?25h");
 		  break;
 		}
 	      if (timer[numcolon - 2] != 0)
@@ -112,6 +127,8 @@ countdown (int timer[], int numcolon)
 	    {
 	      if (timer[numcolon] == 0 && timer[numcolon - 1] == 0)
 		{
+		  // get cursor back
+		  printf ("\33[?25h");
 		  break;
 		}
 	      timer[numcolon] = 60;
@@ -120,12 +137,13 @@ countdown (int timer[], int numcolon)
 	}
       if (numcolon == 1)
 	{
-	  printf ("timer: %i:%i\n", timer[0], timer[1]);
+	  printf ("\rtimer: %i:%i\r", timer[0], timer[1]);
 	}
       else
 	{
-	  printf ("timer: %i:%i:%i\n", timer[0], timer[1], timer[2]);
+	  printf ("\rtimer: %i:%i:%i", timer[0], timer[1], timer[2]);
 	}
+      fflush (stdout);
       sleep (1);
       timer[numcolon] = timer[numcolon] - 1;
     }
