@@ -1,5 +1,5 @@
 /*
- * utools - power_netbsd.c
+ * utools - mem.c
  * (C) 2023 moatx
  * Released under the GNU GPLv2+, see the COPYING file
  * in the source distribution for its full text.
@@ -10,7 +10,7 @@
 #include "mem.h"
 #include "util.h"
 
-char *USAGE = "[-utf]";
+char *USAGE = "[-utfh]";
 
 int
 main(int argc, char **argv)
@@ -23,7 +23,7 @@ main(int argc, char **argv)
 	if (argc == 1)
 		usage(EXIT_SUCCESS);
 
-	while ((ch = getopt(argc, argv, "utf")) != -1) {
+	while ((ch = getopt(argc, argv, "utfh")) != -1) {
 		switch (ch) {
 		case 'u':
 			rputs((getphy() - getfree()));
@@ -34,6 +34,10 @@ main(int argc, char **argv)
 		case 'f':
 			rputs(getfree());
 			break;
+		case 'h':
+			usage(EXIT_SUCCESS);
+			break;
+		case '?':
 		default:
 			usage(EXIT_FAILURE);
 		}
