@@ -74,7 +74,7 @@ readfile (const char *path, char *rstr, size_t size)
   // remove trailing newline
   str[strcspn (str, "\n")] = 0;
 
-  memcpy (rstr, str, size);
+  strncpy(rstr, str, size);
 
 out:
   free (str);
