@@ -16,6 +16,7 @@
 #include<string.h>
 #include<ctype.h>
 #include<signal.h>
+#include <limits.h>
 
 static void
 usage (void)
@@ -29,10 +30,86 @@ static void
 on_signal ()
 {
   printf ("\33[?25h");
-  exit (1);
+  exit (EXIT_FAILURE);
 }
 
-void countdown (int timer[], int countdown);
+static bool
+handle_errors (const char *str, int numcolon)
+{
+  if (str[0] == ':')
+    {
+      fprintf (stderr, "wrong colon location\n");
+      return true;
+    }
+
+  if (numcolon > 2 || numcolon < 1)
+    {
+      fprintf (stderr, "wrong number of colons\n");
+      return true;
+    }
+  int numdigits = 0;
+  for (int i = 0; str[i] != '\0'; i++)
+    {
+      numdigits++;
+      if (str[i] == ':')
+	{
+	  if (numdigits > 3)
+	    {
+	      fprintf (stderr,
+		       "error: more than three digits, besides seconds section\n");
+	      return true;
+	    }
+	  numdigits = 0;
+	}
+      if (str[i + 1] == '\0')
+	{
+	  if (numdigits > 2)
+	    {
+	      fprintf (stderr,
+		       "error: more than two digits in second section\n");
+	      return true;
+	    }
+	}
+    }
+  return false;
+}
+
+static int
+str2int (const char *str)
+{
+  int rint = 0;
+
+  for (int x = 0; str[x] != '\0'; x++)
+    {
+      rint = rint * 10 + str[x] - '0';
+    }
+  return rint;
+}
+
+static void
+split_substring (const char *string, char *retstring, char div, int *pos)
+{
+  // XXX: minus one because deliminar 
+  // char *retstring = malloc(strlen(string) * sizeof(char));
+  // char *retstring[strlen(string)];
+  int i = *pos != 0 ? *pos + 1 : *pos;
+  // for retstring
+  int x = 0;
+
+  for (; string[i] != div; i++)
+    {
+      retstring[x] = string[i];
+      x++;
+    }
+  // add a null terminator to mark as string
+  // retstring[x + 1] = '\0';
+  retstring[x] = '\0';
+  *pos = i;
+  // return retstring;
+
+}
+
+void countdown (int timer[], int numcolon);
 
 int
 main (int argc, char **argv)
@@ -48,46 +125,60 @@ main (int argc, char **argv)
   (void) signal (SIGINT, on_signal);
   (void) signal (SIGTERM, on_signal);
 
-  if (':' == argv[1][0] || ':' == argv[1][strlen (argv[1])])
-    {
-      fprintf (stderr, "wrong colon location\n");
-      goto err;
-    }
   int numcolon = 0;
+  // get the number of colons
   for (int i = 0; argv[1][i] != '\0'; i++)
     {
       if (argv[1][i] == ':')
 	{
-	  if (!isdigit (argv[1][i - 1]) && !isdigit (argv[1][i + 1]))
-	    {
-	      fprintf (stderr, "wrong charector\n");
-	      goto err;
-	    }
 	  numcolon += 1;
 	}
     }
 
-  if (numcolon > 2 || numcolon < 1)
-    {
-      fprintf (stderr, "wrong number of colons\n");
-      goto err;
-    }
+  if (handle_errors (argv[1], numcolon))
+    goto err;
+
+  int pos = 0;
+  // char *str;
+  size_t size = strlen (argv[1]);
+  char *retstring = malloc (size * sizeof (char));
+
   // minutes MM:SS
   if (numcolon == 1)
     {
       int timer[2];
-      timer[0] = atoi (&argv[1][0]);
-      timer[1] = atoi (&argv[1][2]);
+
+      split_substring (argv[1], retstring, ':', &pos);
+      timer[0] = str2int (retstring);
+
+      split_substring (argv[1], retstring, '\0', &pos);
+      timer[1] = str2int (retstring);
+
+      // timer[0] = str2int(split_substring(argv[1], ':', &pos));
+      // timer[1] = str2int(split_substring(argv[1], '\0', &pos));
       countdown (timer, numcolon);
+      // free(&timer[0]);
     } // hours HH:MM:SS
   else
     {
       int timer[3];
-      timer[0] = atoi (&argv[1][0]);
-      timer[1] = atoi (&argv[1][2]);
-      timer[2] = atoi (&argv[1][4]);
+      // char *str;
+      split_substring (argv[1], retstring, ':', &pos);
+      timer[0] = str2int (retstring);
+
+      split_substring (argv[1], retstring, ':', &pos);
+      timer[1] = str2int (retstring);
+
+      split_substring (argv[1], retstring, '\0', &pos);
+      timer[2] = str2int (retstring);
+      // timer[0] = str2int(split_substring(argv[1], ':', &pos));
+      // timer[1] = str2int(split_substring(argv[1], ':', &pos));
+      // timer[2] = str2int(split_substring(argv[1], '\0', &pos));
       countdown (timer, numcolon);
     }
+  // get cursor back
+  free (retstring);
+  printf ("\33[?25h");
   return EXIT_SUCCESS;
 err:
   // get cursor back
@@ -108,8 +199,6 @@ countdown (int timer[], int numcolon)
 	      if (timer[numcolon] == 0
 		  && timer[numcolon - 1] == 0 && timer[numcolon - 2] == 0)
 		{
-		  // get cursor back
-		  printf ("\33[?25h");
 		  break;
 		}
 	      if (timer[numcolon - 2] != 0)
@@ -127,8 +216,6 @@ countdown (int timer[], int numcolon)
 	    {
 	      if (timer[numcolon] == 0 && timer[numcolon - 1] == 0)
 		{
-		  // get cursor back
-		  printf ("\33[?25h");
 		  break;
 		}
 	      timer[numcolon] = 60;
@@ -144,6 +231,7 @@ countdown (int timer[], int numcolon)
 	  printf ("\rtimer: %i:%i:%i", timer[0], timer[1], timer[2]);
 	}
       fflush (stdout);
+      // printf(" ");
       sleep (1);
       timer[numcolon] = timer[numcolon] - 1;
     }
