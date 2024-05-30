@@ -231,7 +231,8 @@ countdown (int timer[], int numcolon)
 	  printf ("\rtimer: %i:%i:%i", timer[0], timer[1], timer[2]);
 	}
       fflush (stdout);
-      // printf(" ");
+      // clear stdout
+      printf("\33[2K\r");
       sleep (1);
       timer[numcolon] = timer[numcolon] - 1;
     }
