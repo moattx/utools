@@ -201,9 +201,10 @@ countdown (int timer[], int numcolon)
 		{
 		  break;
 		}
-	      if (timer[numcolon - 2] != 0)
+	      if (timer[numcolon - 2] != 0 && timer[numcolon - 1] == 0)
 		{
-		  timer[numcolon - 1] = timer[numcolon - 2] * 60;
+		  //timer[numcolon - 1] = timer[numcolon - 2] * 60;
+		  timer[numcolon - 1] = 60;
 		  timer[numcolon - 2] = timer[numcolon - 2] - 1;
 		}
 	      if (timer[numcolon - 1] != 0)
